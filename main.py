@@ -385,8 +385,8 @@ if mes_sel != "Todos":
 # =============================================================================
 col_title, col_badge = st.columns([4, 1])
 with col_title:
-    st.markdown('<h1 class="main-title">Predicción de Tasas de Credito de Consumo</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="subtitle">Analisis y prediccion de tasas efectivas mensuales en entidades bancarias colombianas (2023-2026) <span class="badge-green">● Datos: Superfinanciera de Colombia</span></p>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-title">Predicción de Tasas de Interes para Creditos de Consumo en Colombia</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="subtitle">Análisis y predicción mensual de tasas efectivas promedio en entidades bancarias colombianas, utilizando información histórica del período 2023–2026 <span class="badge-green">● Datos: Superfinanciera de Colombia</span></p>', unsafe_allow_html=True)
 
 
 # =============================================================================
