@@ -446,7 +446,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # =============================================================================
 # TABS PRINCIPALES
 # =============================================================================
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab3, tab4 = st.tabs([
     "🏆 Ranking de Bancos",
     "🔬 Comparacion de Modelos",
     "📋 Datos y Estadisticas"
