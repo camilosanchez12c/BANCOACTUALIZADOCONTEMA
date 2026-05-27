@@ -27,7 +27,7 @@ from data import (
 # CONFIGURACION DE PAGINA
 # =============================================================================
 st.set_page_config(
-    page_title="Prediccion Tasas de Credito - Colombia",
+    page_title="📊 Prediccion Tasas de Credito - Colombia",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -386,7 +386,7 @@ if mes_sel != "Todos":
 col_title, col_badge = st.columns([4, 1])
 with col_title:
     st.markdown('<h1 class="main-title">📊 Prediccion de Tasas de Credito de Consumo</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="subtitle">Analisis y prediccion de tasas efectivas mensuales en entidades bancarias colombianas (2023-2026) <span class="badge-green">● Datos: Superfinanciera</span></p>', unsafe_allow_html=True)
+    st.markdown('<p class="subtitle">Analisis y prediccion de tasas efectivas mensuales en entidades bancarias colombianas (2023-2026) <span class="badge-green">● Datos: Superfinanciera de Colombia</span></p>', unsafe_allow_html=True)
 
 
 # =============================================================================
