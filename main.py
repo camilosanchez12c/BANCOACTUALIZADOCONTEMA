@@ -448,7 +448,6 @@ st.markdown("<br>", unsafe_allow_html=True)
 # =============================================================================
 tab1, tab2, tab3, tab4 = st.tabs([
     "🏆 Ranking de Bancos",
-    "📈 Series Temporales",
     "🔬 Comparacion de Modelos",
     "📋 Datos y Estadisticas"
 ])
@@ -671,9 +670,9 @@ with tab1:
     
     st.dataframe(tabla, use_container_width=True, height=400)
 
-""" este por ahora no se va a usar poqruqe al momento de subir los cambios 
-a git hub es demasiado pesado los 2 archivos que tienen la data cruda
-"""
+#este por ahora no se va a usar poqruqe al momento de subir los cambios 
+#a git hub es demasiado pesado los 2 archivos que tienen la data cruda
+
 
 # =============================================================================
 # TAB 3: COMPARACION DE MODELOS
