@@ -1,0 +1,7 @@
+﻿indicador,valor
+horizonte_meses,3
+niveles_modelados,"banco, banco_rango, rango, total"
+n_trials_por_estudio,80
+series_banco_rango,143
+series_banco_rango_aptas,98
+predicciones_finales,109

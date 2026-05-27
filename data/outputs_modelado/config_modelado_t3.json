@@ -1,0 +1,13 @@
+{
+  "min_meses_serie": 18,
+  "min_observaciones_target": 12,
+  "min_creditos_serie": 100,
+  "min_cobertura_meses": 0.8,
+  "test_meses": 6,
+  "valid_meses": 6,
+  "n_trials_intensivo": 80,
+  "timeout_estudio_segundos": null,
+  "n_jobs_modelos_arboles": -1,
+  "r2_minimo_aceptable": 0.0,
+  "horizonte_meses": 3
+}

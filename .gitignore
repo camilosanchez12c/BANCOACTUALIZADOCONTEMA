@@ -1,0 +1,17 @@
+# Entorno virtual
+.venv/
+
+# Cache
+__pycache__/
+*.pyc
+
+# Datos pesados
+data/outputs/*.csv
+
+# Modelos pesados
+*.h5
+*.keras
+*.pkl
+
+# Streamlit
+.streamlit/secrets.toml

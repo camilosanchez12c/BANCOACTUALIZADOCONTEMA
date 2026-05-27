@@ -1,0 +1,5 @@
+﻿nivel,baseline_referencia,r2_baseline,mae_baseline,modelo_recomendado,r2_recomendado,mae_recomendado,criterio
+banco,baseline_tasa_actual,0.8953441192122714,0.8487108682691581,baseline_tasa_actual,0.8953441192122714,0.8487108682691581,acepta optimizado solo si R2 >= baseline y MAE/RMSE no empeoran más de 5%
+banco_rango,baseline_tasa_actual,0.8167415569089015,0.8675771966697945,baseline_tasa_actual,0.8167415569089015,0.8675771966697945,acepta optimizado solo si R2 >= baseline y MAE/RMSE no empeoran más de 5%
+rango,baseline_tasa_actual,0.904801519754567,0.3924782343782414,baseline_tasa_actual,0.904801519754567,0.3924782343782414,acepta optimizado solo si R2 >= baseline y MAE/RMSE no empeoran más de 5%
+total,baseline_tasa_actual,-0.5987388024689335,0.4330092508332536,extra_trees,-0.2291578674772678,0.3276684563496772,acepta optimizado solo si R2 >= baseline y MAE/RMSE no empeoran más de 5%
