@@ -678,8 +678,7 @@ with tab3:
     st.markdown(f"""
     <div class="kpi-card" style="text-align: center; padding: 20px;">
         <p style="font-size: 1.5rem; color: #38bdf8; margin: 0;">{mejor_modelo['modelo_recomendado']}</p>
-        <p style="font-size: 0.9rem; color: #94a3b8; margin: 5px 0;">Precision (R2): {mejor_modelo['r2_recomendado']:.2%}</p>
-        <p style="font-size: 0.9rem; color: #94a3b8; margin: 0;">Error promedio: {mejor_modelo['mae_recomendado']:.2f} puntos</p>
+        
     </div>
     """, unsafe_allow_html=True)
     
