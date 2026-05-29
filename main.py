@@ -277,8 +277,6 @@ if "selected_banco" not in st.session_state:
     st.session_state.selected_banco = "Todos"
 if "selected_rango" not in st.session_state:
     st.session_state.selected_rango = "Todos"
-if "selected_mes" not in st.session_state:
-    st.session_state.selected_mes = "Todos"
 
 
 # =============================================================================
@@ -292,10 +290,8 @@ with st.sidebar:
     if st.button("Limpiar Filtros", use_container_width=True, key="btn_limpiar"):
         st.session_state["banco_filter"] = "Todos"
         st.session_state["rango_filter"] = "Todos"
-        st.session_state["mes_filter"] = "Todos"
         st.session_state.selected_banco = "Todos"
         st.session_state.selected_rango = "Todos"
-        st.session_state.selected_mes = "Todos"
         st.rerun()
 
     st.markdown("")
@@ -320,16 +316,6 @@ with st.sidebar:
     )
     st.session_state.selected_rango = rango_sel
 
-    # Filtro Mes (para historico)
-    meses_opts = ["Todos"] + MESES
-    mes_sel = st.selectbox(
-        "Seleccionar Mes (Historico)", 
-        meses_opts, 
-        index=meses_opts.index(st.session_state.selected_mes) if st.session_state.selected_mes in meses_opts else 0,
-        key="mes_filter"
-    )
-    st.session_state.selected_mes = mes_sel
-
     st.markdown("---")
 
     # Filtros activos
@@ -339,8 +325,6 @@ with st.sidebar:
         filtros_activos.append(f"Banco: {banco_sel}")
     if rango_sel != "Todos":
         filtros_activos.append(f"Rango: {rango_sel[:30]}")
-    if mes_sel != "Todos":
-        filtros_activos.append(f"Mes: {mes_sel}")
 
     if filtros_activos:
         for f in filtros_activos:
@@ -354,7 +338,7 @@ with st.sidebar:
     <div class="info-box">
     Dashboard de prediccion de tasas de credito de consumo en Colombia.<br><br>
     <strong>Datos:</strong> Superfinanciera<br>
-    <strong>Periodo:</strong> {periodo}<br>
+    <strong>Periodo:</strong>Sept 2023 - Feb 2026<br>
     <strong>Prediccion:</strong> Mayo 2026 (T+3)
     </div>
     """, unsafe_allow_html=True)
@@ -370,14 +354,11 @@ if banco_sel != "Todos":
 if rango_sel != "Todos":
     pred_filtradas = pred_filtradas[pred_filtradas["rango_monto"] == rango_sel]
 
-# Filtro mes aplicado al historico
+# Filtro historico solo por banco
 hist_filtrado = historico_df.copy()
 hist_total_filtrado = historico_total_df.copy()
 if banco_sel != "Todos":
     hist_filtrado = hist_filtrado[hist_filtrado["banco"] == banco_sel]
-if mes_sel != "Todos":
-    hist_filtrado = hist_filtrado[hist_filtrado["mes"] == mes_sel]
-    hist_total_filtrado = hist_total_filtrado[hist_total_filtrado["mes"] == mes_sel]
 
 
 # =============================================================================
@@ -772,6 +753,23 @@ with tab3:
     tabla_simple = tabla_simple.sort_values("Precision (R2)", ascending=False)
     
     st.dataframe(tabla_simple, use_container_width=True, height=300)
+    
+    #cambio de bloque div de estadistica y datos hacia comparacion modelos 
+    # Criterio de seleccion
+    st.markdown("#### Criterio de Seleccion de Modelos")
+    
+    for _, row in criterio_df.iterrows():
+        with st.expander(f"Nivel: {row['nivel'].upper()}"):
+            st.markdown(f"""
+            - **Baseline de referencia:** {row['baseline_referencia']}
+            - **R2 baseline:** {row['r2_baseline']:.4f}
+            - **MAE baseline:** {row['mae_baseline']:.4f}
+            - **Modelo recomendado:** {row['modelo_recomendado']}
+            - **R2 recomendado:** {row['r2_recomendado']:.4f}
+            - **MAE recomendado:** {row['mae_recomendado']:.4f}
+            - **Criterio:** {row['criterio']}
+            """)
+
 
 
 # =============================================================================
@@ -871,21 +869,7 @@ with tab4:
         )
         st.plotly_chart(fig_scatter, use_container_width=True)
     
-    # Criterio de seleccion
-    st.markdown("#### Criterio de Seleccion de Modelos")
     
-    for _, row in criterio_df.iterrows():
-        with st.expander(f"Nivel: {row['nivel'].upper()}"):
-            st.markdown(f"""
-            - **Baseline de referencia:** {row['baseline_referencia']}
-            - **R2 baseline:** {row['r2_baseline']:.4f}
-            - **MAE baseline:** {row['mae_baseline']:.4f}
-            - **Modelo recomendado:** {row['modelo_recomendado']}
-            - **R2 recomendado:** {row['r2_recomendado']:.4f}
-            - **MAE recomendado:** {row['mae_recomendado']:.4f}
-            - **Criterio:** {row['criterio']}
-            """)
-
 
 # =============================================================================
 # FOOTER
@@ -894,6 +878,6 @@ st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #64748b; font-size: 0.8rem;">
     Dashboard de Prediccion de Tasas de Credito de Consumo | Datos: Superfinanciera de Colombia | 
-    Periodo: Oct 2023 - Feb 2026 | Prediccion: Mayo 2026 (T+3)
+    Periodo: Sept 2023 - Feb 2026 | Prediccion: Mayo 2026 (T+3)
 </div>
 """, unsafe_allow_html=True)
