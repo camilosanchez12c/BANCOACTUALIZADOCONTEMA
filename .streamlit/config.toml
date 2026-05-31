@@ -1,0 +1,18 @@
+[theme]
+# Tema claro profesional para dashboard financiero
+# Siguiendo teoria del color: Azul = confianza, profesionalismo (sector bancario)
+
+# Color primario - Azul corporativo
+primaryColor = "#1E40AF"
+
+# Fondo principal - Blanco suave (no puro, reduce fatiga visual)
+backgroundColor = "#F8FAFC"
+
+# Fondo secundario (sidebar, cards) - Gris muy claro
+secondaryBackgroundColor = "#E2E8F0"
+
+# Color de texto - Gris oscuro (mejor contraste que negro puro)
+textColor = "#1E293B"
+
+# Fuente profesional
+font = "sans serif"
