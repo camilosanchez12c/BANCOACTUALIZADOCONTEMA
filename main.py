@@ -677,6 +677,16 @@ hist_total_filtrado = historico_total_df.copy()
 if banco_sel != "Todos":
     hist_filtrado = hist_filtrado[hist_filtrado["banco"] == banco_sel]
 
+# Filtro de metricas por banco y rango para Tab 3
+metricas_filtradas = metricas_df.copy()
+if banco_sel != "Todos" and "banco" in metricas_filtradas.columns:
+    metricas_filtradas = metricas_filtradas[metricas_filtradas["banco"] == banco_sel]
+if rango_sel != "Todos" and "rango_monto" in metricas_filtradas.columns:
+    metricas_filtradas = metricas_filtradas[metricas_filtradas["rango_monto"] == rango_sel]
+
+# Filtro de criterio por banco/rango (si aplica)
+criterio_filtrado = criterio_df.copy()
+
 
 # =============================================================================
 # COLORES PARA GRAFICOS - TEMA CLARO FIJO
@@ -1260,6 +1270,24 @@ with tab3:
     
     st.markdown("<br>", unsafe_allow_html=True)
     
+    # Mostrar filtros activos
+    if banco_sel != "Todos" or rango_sel != "Todos":
+        filtros_html = ""
+        if banco_sel != "Todos":
+            filtros_html += f'<span class="comparison-badge badge-neutral">Banco: {banco_sel}</span> '
+        if rango_sel != "Todos":
+            filtros_html += f'<span class="comparison-badge badge-neutral">Rango: {rango_sel[:30]}</span>'
+        st.markdown(f'<div style="margin-bottom: 16px;"><strong>Filtros aplicados:</strong> {filtros_html}</div>', unsafe_allow_html=True)
+        
+        # Verificar si hay datos filtrados
+        if len(metricas_filtradas) == 0:
+            st.warning("No hay datos de metricas para los filtros seleccionados. Mostrando datos generales.")
+            metricas_para_usar = metricas_df
+        else:
+            metricas_para_usar = metricas_filtradas
+    else:
+        metricas_para_usar = metricas_filtradas
+    
     # Diccionario para nombres de modelos legibles
     MODEL_DISPLAY_NAMES = {
         "baseline_tasa_actual": "Baseline Tasa Actual",
@@ -1291,11 +1319,26 @@ with tab3:
         """Convierte nombres de modelos a formato legible"""
         return MODEL_DISPLAY_NAMES.get(name, name.replace("_", " ").title())
     
-    # Resumen simple: Mejor modelo general
-    mejor_modelo = criterio_df.loc[criterio_df["r2_recomendado"].idxmax()]
-    modelo_nombre_display = format_model_name(mejor_modelo['modelo_recomendado'])
+    # Resumen simple: Mejor modelo para los datos filtrados
+    # Calculamos el mejor modelo basado en metricas filtradas
+    if len(metricas_para_usar) > 0:
+        mejor_por_metricas = metricas_para_usar.groupby("modelo").agg({"r2": "mean", "mae": "mean"}).reset_index()
+        mejor_idx = mejor_por_metricas["r2"].idxmax()
+        mejor_modelo_nombre = mejor_por_metricas.loc[mejor_idx, "modelo"]
+        mejor_r2 = mejor_por_metricas.loc[mejor_idx, "r2"]
+        mejor_mae = mejor_por_metricas.loc[mejor_idx, "mae"]
+    else:
+        # Fallback a criterio general
+        mejor_modelo_row = criterio_df.loc[criterio_df["r2_recomendado"].idxmax()]
+        mejor_modelo_nombre = mejor_modelo_row['modelo_recomendado']
+        mejor_r2 = mejor_modelo_row['r2_recomendado']
+        mejor_mae = mejor_modelo_row['mae_recomendado']
     
-    st.markdown("#### Mejor Modelo General")
+    modelo_nombre_display = format_model_name(mejor_modelo_nombre)
+    
+    # Titulo con indicacion de filtros
+    titulo_mejor = "Mejor Modelo" + (" (para seleccion actual)" if banco_sel != "Todos" or rango_sel != "Todos" else " General")
+    st.markdown(f"#### {titulo_mejor}")
     
     col_best1, col_best2 = st.columns([2, 1])
     
@@ -1305,11 +1348,11 @@ with tab3:
             <div class="big-number" style="color: #1E40AF; font-size: 2rem;">{modelo_nombre_display}</div>
             <div style="display: flex; justify-content: center; gap: 30px; margin-top: 16px;">
                 <div>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #059669;">{mejor_modelo['r2_recomendado']:.2%}</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #059669;">{mejor_r2:.2%}</div>
                     <div style="font-size: 0.8rem; color: #64748B;">Precision (R2)</div>
                 </div>
                 <div>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #DC2626;">{mejor_modelo['mae_recomendado']:.2f}</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #DC2626;">{mejor_mae:.2f}</div>
                     <div style="font-size: 0.8rem; color: #64748B;">Error (MAE)</div>
                 </div>
             </div>
@@ -1344,7 +1387,7 @@ with tab3:
     ''', "blue", "r2_modelos")
     
     # Agrupar por modelo y calcular R2 promedio
-    modelo_resumen = metricas_df.groupby("modelo").agg({"r2": "mean", "mae": "mean"}).reset_index()
+    modelo_resumen = metricas_para_usar.groupby("modelo").agg({"r2": "mean", "mae": "mean"}).reset_index()
     modelo_resumen["modelo_display"] = modelo_resumen["modelo"].apply(format_model_name)
     modelo_resumen = modelo_resumen.sort_values("r2", ascending=(orden_r2 == "Menor a mayor"))
     
