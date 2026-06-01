@@ -1243,63 +1243,8 @@ with tab1:
 # =============================================================================
 with tab3:
     st.markdown('<div class="section-header">Comparacion de Modelos de Machine Learning</div>', unsafe_allow_html=True)
-
-    # ── FILTRO DE NIVEL — va PRIMERO, arriba de todo ──────────────────────
-    nivel_opciones = {
-        "banco_rango": "Banco × Rango (mas detallado)",
-        "banco":       "Por Banco",
-        "rango":       "Por Rango de Monto",
-        "total":       "Total del sistema",
-    }
-
-    col_filtro_lbl, col_filtro_sel = st.columns([2, 2])
-    with col_filtro_lbl:
-        st.markdown("""
-        <div style="padding-top: 6px;">
-            <span style="font-size: 1rem; font-weight: 600; color: #1E293B;">
-                📊 Metricas de evaluacion por nivel
-            </span><br>
-            <span style="font-size: 0.8rem; color: #64748B;">
-                Selecciona el nivel jerarquico para filtrar R², MAE y graficas
-            </span>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_filtro_sel:
-        nivel_sel = st.selectbox(
-            "Nivel de evaluacion",
-            options=list(nivel_opciones.keys()),
-            format_func=lambda x: nivel_opciones[x],
-            index=0,
-            key="nivel_agregacion_tab3",
-            label_visibility="collapsed",
-        )
-
-    # Descripcion del nivel activo
-    st.markdown(f"""
-    <div style="background: #EFF6FF; border: 1px solid #93C5FD; border-radius: 8px;
-                padding: 10px 16px; margin: 8px 0 16px 0; display:flex; align-items:center; gap:8px;">
-        <span style="font-size: 1.1rem;">🔍</span>
-        <span style="color: #1E40AF; font-size: 0.88rem;">
-            <strong>Nivel activo:</strong> {nivel_opciones[nivel_sel]}
-            &nbsp;|&nbsp; Las graficas, el KPI y la tabla de abajo muestran las metricas de este nivel.
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ── Calcular metricas filtradas por nivel ─────────────────────────────
-    metricas_nivel = metricas_df[metricas_df["nivel"] == nivel_sel].copy()
-
-    if len(metricas_nivel) > 0:
-        metricas_para_usar = metricas_nivel.groupby("modelo").agg(
-            {"r2": "mean", "mae": "mean"}
-        ).reset_index()
-    else:
-        # fallback: usar nivel total
-        metricas_para_usar = metricas_df[metricas_df["nivel"] == "total"].groupby("modelo").agg(
-            {"r2": "mean", "mae": "mean"}
-        ).reset_index()
-
-    # ── Guia interactiva (va después del filtro) ──────────────────────────
+    
+    # Guia interactiva - formato claro y legible
     with st.expander("Guia: Como interpretar estos resultados - Haz clic para aprender", expanded=False):
         st.markdown("""
         <div style="background: #FFFFFF; border: 2px solid #2563EB; border-radius: 12px; padding: 20px; margin-bottom: 12px;">
@@ -1323,9 +1268,53 @@ with tab3:
             <p style="color: #92400E; margin: 0;"><strong>Hallazgo interesante:</strong> Los baselines funcionan muy bien porque las tasas de credito tienen alta inercia (cambian poco de mes a mes).</p>
         </div>
         """, unsafe_allow_html=True)
-
+    
     st.markdown("<br>", unsafe_allow_html=True)
-
+    
+    # FILTRO DE NIVEL DE AGREGACION - Este es el filtro correcto para Tab 3
+    st.markdown("##### Selecciona el nivel de analisis")
+    
+    nivel_opciones = {
+        "total": "Total (todos los bancos y rangos)",
+        "banco": "Por Banco (metricas por cada banco)",
+        "rango": "Por Rango de Monto (metricas por cada rango)",
+        "banco_rango": "Por Banco y Rango (mas detallado)"
+    }
+    
+    col_filtro1, col_filtro2 = st.columns([2, 2])
+    with col_filtro1:
+        nivel_sel = st.selectbox(
+            "Nivel de Agregacion",
+            options=list(nivel_opciones.keys()),
+            format_func=lambda x: nivel_opciones[x],
+            key="nivel_agregacion_tab3"
+        )
+    
+    # Mostrar descripcion del nivel seleccionado
+    st.markdown(f"""
+    <div style="background: #F0FDF4; border: 1px solid #22C55E; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+        <span style="color: #166534; font-size: 0.85rem;">
+            <strong>Nivel seleccionado:</strong> {nivel_opciones[nivel_sel]}
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Filtrar metricas por nivel seleccionado
+    metricas_nivel = metricas_df[metricas_df["nivel"] == nivel_sel].copy()
+    
+    # Agrupar por modelo para obtener metricas promedio del nivel
+    if len(metricas_nivel) > 0:
+        metricas_para_usar = metricas_nivel.groupby("modelo").agg({
+            "r2": "mean",
+            "mae": "mean"
+        }).reset_index()
+    else:
+        # Fallback a total si no hay datos
+        metricas_para_usar = metricas_df[metricas_df["nivel"] == "total"].groupby("modelo").agg({
+            "r2": "mean",
+            "mae": "mean"
+        }).reset_index()
+    
     # Diccionario para nombres de modelos legibles
     MODEL_DISPLAY_NAMES = {
         "baseline_tasa_actual": "Baseline Tasa Actual",
@@ -1365,21 +1354,22 @@ with tab3:
         mejor_r2 = metricas_para_usar.loc[mejor_idx, "r2"]
         mejor_mae = metricas_para_usar.loc[mejor_idx, "mae"]
     else:
+        # Fallback a criterio general
         mejor_modelo_row = criterio_df.loc[criterio_df["r2_recomendado"].idxmax()]
-        mejor_modelo_nombre = mejor_modelo_row["modelo_recomendado"]
-        mejor_r2 = mejor_modelo_row["r2_recomendado"]
-        mejor_mae = mejor_modelo_row["mae_recomendado"]
-
+        mejor_modelo_nombre = mejor_modelo_row['modelo_recomendado']
+        mejor_r2 = mejor_modelo_row['r2_recomendado']
+        mejor_mae = mejor_modelo_row['mae_recomendado']
+    
     modelo_nombre_display = format_model_name(mejor_modelo_nombre)
-
-    # Etiqueta del nivel activo (para el titulo del KPI)
+    
+    # Titulo con indicacion del nivel seleccionado
     nivel_label = {
-        "total":       "General (todo el sistema)",
-        "banco":       "por Banco",
-        "rango":       "por Rango de Monto",
-        "banco_rango": "por Banco × Rango",
+        "total": "General",
+        "banco": "por Banco",
+        "rango": "por Rango",
+        "banco_rango": "por Banco y Rango"
     }
-    titulo_mejor = f"Mejor Modelo — Nivel {nivel_label.get(nivel_sel, nivel_sel)}"
+    titulo_mejor = f"Mejor Modelo - Nivel {nivel_label.get(nivel_sel, nivel_sel)}"
     st.markdown(f"#### {titulo_mejor}")
     
     col_best1, col_best2 = st.columns([2, 1])
